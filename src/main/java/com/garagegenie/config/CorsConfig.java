@@ -14,8 +14,6 @@ import java.util.List;
 @Configuration
 public class CorsConfig {
 
-    // Set FRONTEND_URL env var in Railway to your Netlify URL, e.g.
-    // https://garage-genie.netlify.app
     @Value("${FRONTEND_URL:}")
     private String frontendUrl;
 
@@ -24,17 +22,18 @@ public class CorsConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
 
-        // Always allow local development origins
         List<String> allowedOrigins = new ArrayList<>(Arrays.asList(
+                // ── Production ──────────────────────────────────────────
+                "https://harshgaragesaharanpur.netlify.app",
+                // ── Local development ────────────────────────────────────
                 "http://localhost:5173",
                 "http://localhost:8080",
                 "http://localhost:3000",
                 "http://localhost:4173"));
 
-        // Add the production Netlify URL from environment variable
+        // Additional origins can be injected via FRONTEND_URL Railway variable
+        // (comma-separated, e.g. https://a.netlify.app,https://b.netlify.app)
         if (frontendUrl != null && !frontendUrl.isBlank()) {
-            // Support comma-separated list of URLs e.g.
-            // "https://a.netlify.app,https://b.netlify.app"
             Arrays.stream(frontendUrl.split(","))
                     .map(String::trim)
                     .filter(s -> !s.isEmpty())
